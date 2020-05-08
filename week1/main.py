@@ -62,12 +62,16 @@ if __name__ == "__main__":
     lines = f.readlines()
     data = lines[3:]
     typeahead = defaultdict(List)
+    f.close()
 
     for line in data:
         words = line.split()
         prefix = words[0]
         typeahead[prefix] = words[1:]
 
-    prefix = input()
-    print(typeahead[prefix])
-    f.close()
+    p = re.compile('\w*')
+    while True:
+        prefix = input()
+        if not p.match(prefix):
+            break
+        print(typeahead[prefix])
