@@ -56,7 +56,7 @@ def build_index(pq_size: int):
 
 if __name__ == "__main__":
     tokenize()
-    build_index()
+    build_index(5)
 
     f = open("index.txt", 'r')
     lines = f.readlines()
