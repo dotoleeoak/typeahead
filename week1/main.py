@@ -6,11 +6,9 @@ import json
 import time
 
 def tokenize():
-    fr = open("1342-0.txt", "r")
-    fw = open("word-count.txt", "w")
-
+    with open("1342-0.txt", 'r') as f:
+        lines = f.readlines()
     n_keys = defaultdict(int)
-    lines = fr.readlines()
 
     for line in lines:
         words_all = re.split('\W', line)
@@ -18,17 +16,14 @@ def tokenize():
         for word in words:
             n_keys[word.lower()] += 1
 
-    json.dump(n_keys, fw, indent=4, sort_keys=True)
-    fr.close()
-    fw.close()
+    with open("word-count.txt", 'w') as f:
+        json.dump(n_keys, f, indent=4, sort_keys=True)
     
 def build_index(pq_size: int):
-    fr = open("word-count.txt", 'r')
-    fw = open("index.txt", 'w')
-
-    index = defaultdict(PriorityQueue)
-    data = json.load(fr)
+    with open("word-count.txt", 'r') as f:
+        data = json.load(f)
     items = data.items()
+    index = defaultdict(PriorityQueue)
 
     for word, count in items:
         for i in range(5):
@@ -39,6 +34,7 @@ def build_index(pq_size: int):
 
     localtime = time.localtime(time.time())
     version = time.strftime('%c', localtime)
+    fw = open("index.txt", 'w')
     fw.write("Index Version: " + version + '\n')
     fw.write("PriorityQueue Size: " + str(pq_size) + '\n\n')
 
@@ -50,19 +46,16 @@ def build_index(pq_size: int):
                 break
             fw.write(pq.get()[1] + ' ')
         fw.write('\n')
-
-    fr.close()
     fw.close()
 
 if __name__ == "__main__":
     tokenize()
     build_index(5)
 
-    f = open("index.txt", 'r')
-    lines = f.readlines()
+    with open("index.txt", 'r') as f:
+        lines = f.readlines()
     data = lines[3:]
     typeahead = defaultdict(List)
-    f.close()
 
     for line in data:
         words = line.split()
