@@ -4,13 +4,13 @@ import re
 import json
 import time
 
-def tokenize():
-    with open("1342-0.txt", 'r') as f:
+def tokenize(txt_file: str):
+    with open(txt_file, 'r') as f:
         lines = f.readlines()
     n_keys = defaultdict(int)
 
     for line in lines:
-        words_all = re.split('\W', line)
+        words_all = re.split(r'\W', line)
         words = filter(None, words_all)
         for word in words:
             n_keys[word.lower()] += 1
@@ -47,10 +47,7 @@ def build_index(pq_size: int):
         fw.write('\n')
     fw.close()
 
-if __name__ == "__main__":
-    tokenize()
-    build_index(5)
-
+def main(command: str):
     with open("index.txt", 'r') as f:
         lines = f.readlines()
     data = lines[3:]
@@ -61,9 +58,18 @@ if __name__ == "__main__":
         prefix = words[0]
         typeahead[prefix] = words[1:]
 
-    p = re.compile('\w+')
-    while True:
-        prefix = input()
-        if not p.match(prefix):
-            break
-        print(typeahead[prefix])
+    ret = []
+    words_all = re.split(r'\W', command)
+    words = filter(None, words_all)
+    for prefix in words:
+        ret.append(typeahead[prefix])
+    return ret
+
+if __name__ == "__main__":
+    txt_file = input()
+    tokenize(txt_file)
+    build_index(5)
+    command = input()
+    result = main(command)
+    for i in result:
+        print(i)

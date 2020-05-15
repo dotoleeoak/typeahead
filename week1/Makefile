@@ -1,8 +1,6 @@
 all: test server
 
-.PHONY=setup
-.PHONY=test
-.PHONY=clean
+.PHONY: all setup test server clean
 
 setup:
 
