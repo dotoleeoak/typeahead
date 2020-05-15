@@ -1,6 +1,6 @@
 from collections import defaultdict
 from queue import PriorityQueue
-from typing import List
+# from typing import List
 import re
 import json
 import time
@@ -55,14 +55,14 @@ if __name__ == "__main__":
     with open("index.txt", 'r') as f:
         lines = f.readlines()
     data = lines[3:]
-    typeahead = defaultdict(List)
+    typeahead = defaultdict(list)
 
     for line in data:
         words = line.split()
         prefix = words[0]
         typeahead[prefix] = words[1:]
 
-    p = re.compile('\w*')
+    p = re.compile('\w+')
     while True:
         prefix = input()
         if not p.match(prefix):
