@@ -23,7 +23,10 @@ class MyTest(TestCase):
     def test3(self):
         command = 'act fil ab'
         result = main(command)
-        ans = [['actually', 'act', 'acted', 'actions', 'active'],
-                ['file', 'files', 'filial', 'fill', 'filled'],
-                ['about', 'able', 'absence', 'above', 'absolutely']]
+        # ans = [['actually', 'act', 'acted', 'actions', 'active'],
+        #         ['file', 'files', 'filial', 'fill', 'filled'],
+        #         ['about', 'able', 'absence', 'above', 'absolutely']]
+        ans = [['actually', 'act', 'actual', 'active', 'actions'],
+            ['filling', 'files', 'file', 'filled', 'fill'],
+            ['able', 'absence', 'about', 'above', 'absolutely']]
         self.assertEqual(ans, result)

@@ -1,4 +1,4 @@
-all: test server
+all: clean test server
 
 .PHONY: all setup test server clean
 

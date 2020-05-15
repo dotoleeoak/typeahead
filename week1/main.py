@@ -1,5 +1,5 @@
 from collections import defaultdict
-from queue import PriorityQueue
+from heapq import heappush, heappushpop
 import re
 import json
 import time
@@ -22,14 +22,17 @@ def build_index(pq_size: int):
     with open("word-count.txt", 'r') as f:
         data = json.load(f)
     items = data.items()
-    index = defaultdict(PriorityQueue)
+    index = defaultdict(list)
 
     for word, count in items:
         for i in range(5):
             if i == len(word):
                 break
             prefix = word[:i+1]
-            index[prefix].put((-count, word))
+            if len(index[prefix]) < pq_size:
+                heappush(index[prefix], (count, word))
+            else:
+                heappushpop(index[prefix], (count, word))
 
     localtime = time.localtime(time.time())
     version = time.strftime('%c', localtime)
@@ -40,10 +43,9 @@ def build_index(pq_size: int):
     items = index.items()
     for prefix, pq in items:
         fw.write(prefix + ' ')
-        for i in range(pq_size):
-            if pq.empty():
-                break
-            fw.write(pq.get()[1] + ' ')
+        pq.reverse()
+        for i in pq:
+            fw.write(i[1] + ' ')
         fw.write('\n')
     fw.close()
 
@@ -59,8 +61,7 @@ def main(command: str):
         typeahead[prefix] = words[1:]
 
     ret = []
-    words_all = re.split(r'\W', command)
-    words = filter(None, words_all)
+    words = command.split()
     for prefix in words:
         ret.append(typeahead[prefix])
     return ret
