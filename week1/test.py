@@ -1,14 +1,32 @@
 from unittest.case import TestCase
 from subprocess import PIPE, run
-
+from main import tokenize, build_index, main
+import pytest
 
 class MyTest(TestCase):
     def test1(self):
-        p = run(['python3', 'main.py'], stdout=PIPE, input='act\n$', encoding='UTF-8')
-        ans = "['actually', 'act', 'acted', 'actions', 'active']\n"
-        self.assertEqual(ans, p.stdout)
+        tokenize("1342-0.txt")
+        with open("word-count.txt", 'r') as f1:
+            w1 = f1.readlines()
+        with open("test/word-count.txt", 'r') as f2:
+            w2 = f2.readlines()
+        self.assertEqual(w1, w2)
 
     def test2(self):
-        p = run(['python3', 'main.py'], stdout=PIPE, input='fil\n$', encoding='UTF-8')
-        ans = "['file', 'files', 'filial', 'fill', 'filled']\n"
-        self.assertEqual(ans, p.stdout)
+        build_index(5)
+        with open("index.txt", 'r') as f1:
+            w1 = f1.readlines()
+        with open("test/index.txt", 'r') as f2:
+            w2 = f2.readlines()
+        self.assertEqual(w1[1:], w2[1:])
+
+    def test3(self):
+        command = 'act fil ab'
+        result = main(command)
+        # ans = [['actually', 'act', 'acted', 'actions', 'active'],
+        #         ['file', 'files', 'filial', 'fill', 'filled'],
+        #         ['about', 'able', 'absence', 'above', 'absolutely']]
+        ans = [['actually', 'act', 'actual', 'active', 'actions'],
+            ['filling', 'files', 'file', 'filled', 'fill'],
+            ['able', 'absence', 'about', 'above', 'absolutely']]
+        self.assertEqual(ans, result)
