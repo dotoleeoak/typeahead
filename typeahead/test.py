@@ -1,5 +1,4 @@
 from unittest.case import TestCase
-from subprocess import PIPE, run
 from main import tokenize, build_index, main
 import pytest
 
