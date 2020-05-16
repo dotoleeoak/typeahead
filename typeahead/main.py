@@ -49,10 +49,11 @@ def build_index(pq_size: int):
         fw.write('\n')
     fw.close()
 
-def main(command: str):
+def preprocess():
     with open("index.txt", 'r') as f:
         lines = f.readlines()
     data = lines[3:]
+    global typeahead 
     typeahead = defaultdict(list)
 
     for line in data:
@@ -60,10 +61,15 @@ def main(command: str):
         prefix = words[0]
         typeahead[prefix] = words[1:]
 
+def query(prefix: str):
+    return typeahead[prefix]
+
+def main(command: str):
+    preprocess()
     ret = []
     words = command.split()
     for prefix in words:
-        ret.append(typeahead[prefix])
+        ret.append(query(prefix))
     return ret
 
 if __name__ == "__main__":
