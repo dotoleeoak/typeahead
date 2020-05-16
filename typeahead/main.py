@@ -1,5 +1,6 @@
 from collections import defaultdict
 from heapq import heappush, heappushpop
+from config import CONFIG
 import re
 import json
 import time
@@ -73,9 +74,8 @@ def main(command: str):
     return ret
 
 if __name__ == "__main__":
-    txt_file = input()
-    tokenize(txt_file)
-    build_index(5)
+    tokenize(CONFIG["filename"])
+    build_index(CONFIG["pq_size"])
     command = input()
     result = main(command)
     for i in result:
