@@ -26,7 +26,7 @@ test:
 	pytest test.py 
 
 server:
-
+	$(PYTHON) app.py
 
 clean:
 	rm -f index.txt word-count.txt 
