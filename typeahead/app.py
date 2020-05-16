@@ -20,7 +20,7 @@ class Healthcheck(Resource):
 
 class Search(Resource):
     def get(self, prefix):
-        return str(main.query(prefix))
+        return {prefix: main.query(prefix)}
 
 class Reload(Resource):
     def post(self):
