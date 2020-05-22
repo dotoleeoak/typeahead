@@ -1,16 +1,13 @@
 from unittest.case import TestCase
 from config import CONFIG
-from app import app
-import main
-import pytest
-import requests
+from typeahead import app, main
 
 class Test_API(TestCase):
     def setUp(self):
         main.tokenize(CONFIG["filename"])
         main.build_index(CONFIG["pq_size"])
         main.preprocess()
-        self.app = app.test_client()
+        self.app = app.app.test_client()
 
     def test1(self):
         response = self.app.get('/')
