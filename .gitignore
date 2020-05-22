@@ -1,6 +1,6 @@
-typeahead/__pycache__/
-typeahead/index.txt
-typeahead/word-count.txt
+__pycache__/
+index.txt
+word-count.txt
 
 #pytest
 doc/*/_build

@@ -15,11 +15,11 @@ requirements:
 	$(PIP) install -r requirements.txt
 
 test:
-	pytest test.py 
+	$(PYTHON) -m pytest
 
 server:
 	$(PYTHON) app.py
 
 clean:
 	rm -f index.txt word-count.txt 
-	rm -rf __pycache__ .pytest_cache
+	rm -rf ./__pycache__ */__pycache__ .pytest_cache
