@@ -1,5 +1,6 @@
 from collections import defaultdict
 from heapq import heappush, heappushpop
+from config import CONFIG
 import re
 import json
 import time
@@ -49,10 +50,11 @@ def build_index(pq_size: int):
         fw.write('\n')
     fw.close()
 
-def main(command: str):
+def preprocess():
     with open("index.txt", 'r') as f:
         lines = f.readlines()
     data = lines[3:]
+    global typeahead 
     typeahead = defaultdict(list)
 
     for line in data:
@@ -60,16 +62,20 @@ def main(command: str):
         prefix = words[0]
         typeahead[prefix] = words[1:]
 
+def query(prefix: str):
+    return typeahead[prefix]
+
+def main(command: str):
+    preprocess()
     ret = []
     words = command.split()
     for prefix in words:
-        ret.append(typeahead[prefix])
+        ret.append(query(prefix))
     return ret
 
 if __name__ == "__main__":
-    txt_file = input()
-    tokenize(txt_file)
-    build_index(5)
+    tokenize(CONFIG["filename"])
+    build_index(CONFIG["pq_size"])
     command = input()
     result = main(command)
     for i in result:
