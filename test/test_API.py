@@ -1,20 +1,17 @@
 from unittest.case import TestCase
-from config import CONFIG
-from typeahead import app, main
+from typeahead import app
+
 
 class Test_API(TestCase):
     def setUp(self):
-        main.tokenize(CONFIG["filename"])
-        main.build_index(CONFIG["pq_size"])
-        main.preprocess()
-        self.app = app.app.test_client()
+        self.app = app.test_client()
 
     def test1(self):
         response = self.app.get('/')
-        self.assertEqual(response.json, CONFIG)
+        self.assertEqual(response.json, app.config)
         self.assertEqual(200, response.status_code)
 
     def test2(self):
         response = self.app.get('/search/ab')
-        self.assertEqual(response.json, 
-            {"ab": ["able", "absence", "about", "above", "absolutely"]})
+        self.assertEqual(response.json,
+                         {"ab": ["able", "absence", "about", "above", "absolutely"]})
