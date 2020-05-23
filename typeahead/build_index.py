@@ -10,9 +10,9 @@ class BuildIndex:
     def __init__(self, **kwargs):
         localtime = time.localtime(time.time())
         self.version = time.strftime('%c', localtime)
-        self.filename = kwargs["filename"]
-        self.heap_size = kwargs["heap_size"]
-        self.prefix_size = kwargs["prefix_size"]
+        self.filename = kwargs["FILE_NAME"]
+        self.heap_size = kwargs["HEAP_SIZE"]
+        self.prefix_size = kwargs["PREFIX_SIZE"]
         self.typeahead = defaultdict(list)
 
     def tokenize(self):
