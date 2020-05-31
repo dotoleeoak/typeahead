@@ -2,6 +2,9 @@ __pycache__/
 index.txt
 word-count.txt
 
+sorting/*.txt
+sorting/part/*.txt
+
 #pytest
 doc/*/_build
 doc/*/.doctrees

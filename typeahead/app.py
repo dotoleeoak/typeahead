@@ -1,45 +1,48 @@
 from flask_restful import Resource
+from typeahead import app
+from typeahead.build_index import BuildIndex
+
+builder = BuildIndex(
+    app.config["DIR_INPUT"],
+    app.config["DIR_OUTPUT"],
+    app.config["VERSION"],
+    app.config["HEAP_SIZE"],
+    app.config["PREFIX_SIZE"],
+)
+builder.tokenize()
+builder.build_index()
+builder.read_index()
 
 
-# TODO: many many things to implement...
-# but I don't think it'll take much time
-
-class Status(Resource):
-    def get(self):
-        # return app.config
-        pass
+@app.route("/")
+def status():
+    return str(dict(app.config))  # cannot return config directly
 
 
-class Healthcheck(Resource):
-    def get(self):
-        # return 'what is liveness?'
-        pass
+@app.route("/healthcheck")
+def healthcheck():
+    return "status OK."
 
 
-class Search(Resource):
-    def get(self, prefix):
-        # return builder.typeahead[prefix]
-        pass
+@app.route("/search/<prefix>")
+def search(prefix):
+    return str(builder.search(prefix))
 
 
-class Reload(Resource):
-    def post(self):
-        pass
+@app.route("/admin/index/reload", methods=["POST"])
+def reload():
+    builder.reload()
+    builder.read_index()
+    return "Index reloaded."
 
 
-class Write(Resource):
-    def post(self, prefix):
-        pass
-
-    def delete(self, prefix):
-        pass
+@app.route("/admin/index/<prefix>", methods=["POST", "DELETE"])
+def update(prefix):
+    builder.update(prefix, request.json[prefix])
+    return "Index updated."
 
 
-# api.add_resource(Status, '/')
-# api.add_resource(Healthcheck, '/healthcheck')
-# api.add_resource(Search, '/search/<prefix>')
-# api.add_resource(Reload, '/admin/index/reload')
-# api.add_resource(Write, '/admin/index/<prefix>')
-
-# if __name__ == '__main__':
-#     app.run(port=CONFIG['port'])
+@app.route("admin/index/<prefix>", methods=["DELETE"])
+def delete(prefix):
+    builder.delete(prefix, request.json[prefix])
+    return "Index deleted."

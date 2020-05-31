@@ -3,7 +3,7 @@ PIP = pip3
 
 PROJ = typeahead
 VENV_PATH = $$HOME/.virtualenvs/${PROJ}
-SERVER_SETTING = env-config/config.py
+SERVER_SETTING = config/config.py
 
 all: clean test server
 
@@ -19,7 +19,7 @@ test:
 	$(PYTHON) -m pytest
 
 server:
-	FLASK_APP=typeahead TYPEAHEAD_SETTINGS=$(SERVER_SETTING) $(PYTHON) -m flask run -p 5000
+	FLASK_APP=$(PROJ) TYPEAHEAD_SETTINGS=$(SERVER_SETTING) $(PYTHON) -m flask run -p 5000
 
 clean:
 	rm -f index.txt word-count.txt 
