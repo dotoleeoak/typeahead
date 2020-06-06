@@ -32,7 +32,6 @@ def search(prefix):
 @app.route("/admin/index/reload", methods=["POST"])
 def reload():
     builder.reload()
-    builder.read_index()
     return "Index reloaded."
 
 

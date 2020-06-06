@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import time
@@ -8,8 +9,6 @@ from heapq import heappush, heappushpop
 
 class BuildIndex:
     def __init__(self, dir_input, dir_output, version, heap_size, prefix_size):
-        # localtime = time.localtime(time.time())
-        # self.version = time.strftime("%c", localtime)
         self.version = 0
         self.dir_input = dir_input
         self.dir_output = dir_output
@@ -40,7 +39,8 @@ class BuildIndex:
                     heappush(index[prefix], (count, word))
                 else:
                     heappushpop(index[prefix], (count, word))
-        with open(, "w") as f:
+        # TODO: fix dir_output
+        with open(self.dir_output, "w") as f:
             f.write(f"Index Version: {self.version}\n")
             f.write(f"PriorityQueue Size: {self.heap_size}\n")
             items = index.items()
@@ -51,7 +51,8 @@ class BuildIndex:
                     f.write(ele[1] + " ")
 
     def read_index(self):
-        with open("index.txt", "r") as f:
+        # TODO: fix dir_output
+        with open(self.dir_output, "r") as f:
             lines = f.readlines()[3:]
             for line in lines:
                 words = line.split()
@@ -62,18 +63,55 @@ class BuildIndex:
         return self.typeahead[prefix]
 
     def reload(self):
-        pass
+        path = os.path.join(self.dir_output, str(self.version + 1))
+        # TODO: maybe update/delete.txt is better to make configuration
+        path_update = os.path.join(path, "update.txt")
+        path_delete = os.path.join(path, "delete.txt")
+        path_batch = os.path.join(path, "batch.txt")
+        if os.path.exists(path_update):
+            with open(path_update, "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    item = line.split()
+                    self.typehead[item[0]] = item[1:]
+
+        if os.path.exists(path_delete):
+            with open(path_delete, "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    item = line.split()
+                    self.typeahead[item[0]] = item[1:]
+
+        if os.path.exitst(path):
+            with open(path_batch, "w") as f:
+                # TODO: just one method to write typeahead
+                f.write(f"Index Version: {self.version}\n")
+                f.write(f"PriorityQueue Size: {self.heap_size}\n")
+                for key, value in typeahead:
+                    f.write("\n" + " ".join([key] + value))
 
     def update(self, prefix, words):
-        self.typeahead[prefix] = word
-        with open(app.config["DIR_UPDATE"], "a") as f:
-            self.version += 1
-            f.write(self.version + " " + str({prefix: self.typeahead[prefix]}) + "\n")
+        self.typeahead[prefix] = words
+        try:
+            path = os.path.join(self.dir_output, str(self.version + 1))
+            os.mkdir(path)
+        except OSError:
+            pass
+        finally:
+            path = os.path.join(path, "update.txt")
+            with open(path, "a") as f:
+                f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")
 
     def delete(self, prefix, words):
         self.typeahead[prefix] = [
             word for word in self.typeahead[prefix] if word not in words
         ]
-        with open(app.config["DIR_UPDATE"], "a") as f:
-            self.version += 1
-            f.write(self.version + " " + str({prefix: self.typeahead[prefix]}) + "\n")
+        try:
+            path = os.path.join(self.dir_output, str(self.version + 1))
+            os.mkdir(path)
+        except OSError:
+            pass
+        finally:
+            path = os.path.join(path, "delete.txt")
+            with open(path, "a") as f:
+                f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")
