@@ -5,6 +5,7 @@ import time
 
 from collections import Counter, defaultdict
 from heapq import heappush, heappushpop
+from typeahead.convert_unicode import convert
 
 
 class BuildIndex:
@@ -15,12 +16,15 @@ class BuildIndex:
         self.heap_size = heap_size
         self.prefix_size = prefix_size
         self.typeahead = defaultdict(list)
+        if not os.path.exists(dir_output):
+            os.mkdir(dir_output)
 
     def tokenize(self):
-        with open(self.filename, "r") as f:
+        with open(self.dir_input, "r") as f:
             data = f.read()
             words_all = re.split(r"\W", data)
             words = filter(None, words_all)
+            words = [convert(word) for word in words]
             n_keys = Counter(words)
         with open("word-count.txt", "w") as f:
             json.dump(n_keys, f, indent=4, sort_keys=True)
@@ -39,8 +43,13 @@ class BuildIndex:
                     heappush(index[prefix], (count, word))
                 else:
                     heappushpop(index[prefix], (count, word))
-        # TODO: fix dir_output
-        with open(self.dir_output, "w") as f:
+        if not os.path.exists(dir_output):
+            os.mkdir(dir_output)
+        path = os.path.join(self.dir_output, str(self.version))
+        if not os.path.exists(path):
+            os.mkdir(path)
+        path = os.path.join(path, "batch.txt")
+        with open(path, "w") as f:
             f.write(f"Index Version: {self.version}\n")
             f.write(f"PriorityQueue Size: {self.heap_size}\n")
             items = index.items()
@@ -51,8 +60,11 @@ class BuildIndex:
                     f.write(ele[1] + " ")
 
     def read_index(self):
-        # TODO: fix dir_output
-        with open(self.dir_output, "r") as f:
+        path = os.path.join(self.dir_output, str(self.version), "batch.txt")
+        if not os.path.exists(path):
+            self.tokenize()
+            self.build_index()
+        with open(path, "r") as f:
             lines = f.readlines()[3:]
             for line in lines:
                 words = line.split()
@@ -60,11 +72,10 @@ class BuildIndex:
                 self.typeahead[prefix] = words[1:]
 
     def search(self, prefix):
-        return self.typeahead[prefix]
+        return self.typeahead[convert(prefix)]
 
     def reload(self):
         path = os.path.join(self.dir_output, str(self.version + 1))
-        # TODO: maybe update/delete.txt is better to make configuration
         path_update = os.path.join(path, "update.txt")
         path_delete = os.path.join(path, "delete.txt")
         path_batch = os.path.join(path, "batch.txt")
@@ -83,8 +94,8 @@ class BuildIndex:
                     self.typeahead[item[0]] = item[1:]
 
         if os.path.exitst(path):
+            self.version += 1
             with open(path_batch, "w") as f:
-                # TODO: just one method to write typeahead
                 f.write(f"Index Version: {self.version}\n")
                 f.write(f"PriorityQueue Size: {self.heap_size}\n")
                 for key, value in typeahead:
@@ -92,26 +103,20 @@ class BuildIndex:
 
     def update(self, prefix, words):
         self.typeahead[prefix] = words
-        try:
-            path = os.path.join(self.dir_output, str(self.version + 1))
+        path = os.path.join(self.dir_output, str(self.version + 1))
+        if not os.path.exists(path):
             os.mkdir(path)
-        except OSError:
-            pass
-        finally:
-            path = os.path.join(path, "update.txt")
-            with open(path, "a") as f:
-                f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")
+        path = os.path.join(path, "update.txt")
+        with open(path, "a") as f:
+            f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")
 
     def delete(self, prefix, words):
         self.typeahead[prefix] = [
             word for word in self.typeahead[prefix] if word not in words
         ]
-        try:
-            path = os.path.join(self.dir_output, str(self.version + 1))
+        path = os.path.join(self.dir_output, str(self.version + 1))
+        if not os.path.exists(path):
             os.mkdir(path)
-        except OSError:
-            pass
-        finally:
-            path = os.path.join(path, "delete.txt")
-            with open(path, "a") as f:
-                f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")
+        path = os.path.join(path, "delete.txt")
+        with open(path, "a") as f:
+            f.write(" ".join([prefix] + self.typeahead[prefix]) + "\n")

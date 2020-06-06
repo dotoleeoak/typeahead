@@ -1,5 +1,5 @@
-from flask_restful import Resource
 from typeahead import app
+
 from typeahead.build_index import BuildIndex
 
 builder = BuildIndex(
@@ -9,9 +9,11 @@ builder = BuildIndex(
     app.config["HEAP_SIZE"],
     app.config["PREFIX_SIZE"],
 )
-builder.tokenize()
-builder.build_index()
-builder.read_index()
+
+
+@app.before_first_request
+def load():
+    builder.read_index()
 
 
 @app.route("/")
@@ -41,7 +43,7 @@ def update(prefix):
     return "Index updated."
 
 
-@app.route("admin/index/<prefix>", methods=["DELETE"])
+@app.route("/admin/index/<prefix>", methods=["DELETE"])
 def delete(prefix):
     builder.delete(prefix, request.json[prefix])
     return "Index deleted."
