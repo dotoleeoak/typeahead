@@ -99,7 +99,7 @@ def convert(test_keyword):
             char3 = int((char_code - (CHOSUNG * char1) - (JUNGSUNG * char2)))
             result.append(JONGSUNG_LIST[char3])
         else:
-            result.append(keyword)
+            result.append(keyword.lower())
     return "".join(result)
 
 

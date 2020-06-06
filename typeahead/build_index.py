@@ -16,8 +16,8 @@ class BuildIndex:
         self.heap_size = heap_size
         self.prefix_size = prefix_size
         self.typeahead = defaultdict(list)
-        if not os.path.exists(dir_output):
-            os.mkdir(dir_output)
+        if not os.path.exists(self.dir_output):
+            os.mkdir(self.dir_output)
 
     def tokenize(self):
         with open(self.dir_input, "r") as f:
@@ -43,8 +43,8 @@ class BuildIndex:
                     heappush(index[prefix], (count, word))
                 else:
                     heappushpop(index[prefix], (count, word))
-        if not os.path.exists(dir_output):
-            os.mkdir(dir_output)
+        if not os.path.exists(self.dir_output):
+            os.mkdir(self.dir_output)
         path = os.path.join(self.dir_output, str(self.version))
         if not os.path.exists(path):
             os.mkdir(path)
