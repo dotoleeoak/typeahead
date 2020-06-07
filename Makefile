@@ -16,6 +16,7 @@ requirements:
 	$(PIP) install -r requirements.txt
 
 test:
+	rm -r typeahead_index/*
 	$(PYTHON) -m pytest
 
 server:

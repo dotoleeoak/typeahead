@@ -1,6 +1,8 @@
 __pycache__/
 index.txt
 word-count.txt
+# !/typeahead_index/
+/typeahead_index/
 
 sorting/*.txt
 sorting/part/*.txt
