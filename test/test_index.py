@@ -5,16 +5,20 @@ from typeahead.build_index import BuildIndex
 
 
 class TestIndex(TestCase):
-    builder = BuildIndex(
-        config_test.DIR_INPUT,
-        config_test.DIR_OUTPUT,
-        config_test.VERSION,
-        config_test.HEAP_SIZE,
-        config_test.PREFIX_SIZE,
-    )
+    def setUp(self):
+        self.builder = BuildIndex(
+            config_test.DIR_INPUT,
+            config_test.DIR_OUTPUT,
+            config_test.VERSION,
+            config_test.HEAP_SIZE,
+            config_test.PREFIX_SIZE,
+        )
+        self.builder.tokenize()
+        self.builder.build_index()
+        self.builder.tokenize()
+        self.builder.read_index()
 
     def test1(self):
-        self.builder.tokenize()
         with open("word-count.txt", "r") as f1:
             w1 = f1.readlines()
         with open("test/word-count-en.txt", "r") as f2:
@@ -22,17 +26,16 @@ class TestIndex(TestCase):
         self.assertEqual(w1, w2)
 
     def test2(self):
-        self.builder.read_index()
-        result = self.builder.typeahead["act"]
+        result = self.builder.search("act")
         ans = ["actually", "act", "actual", "active", "actions"]
         self.assertEqual(result, ans)
 
     def test3(self):
-        result = self.builder.typeahead["haste"]
+        result = self.builder.search("haste")
         ans = ["haste", "hastened", "hastening", "hasten"]
         self.assertEqual(result, ans)
 
     def test4(self):
-        result = self.builder.typeahead["i"]
+        result = self.builder.search("i")
         ans = ["it", "i", "in", "is", "if"]
         self.assertEqual(result, ans)

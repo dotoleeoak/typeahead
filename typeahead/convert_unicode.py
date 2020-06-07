@@ -89,7 +89,6 @@ def convert(test_keyword):
 
     result = []
     for keyword in split_keyword_list:
-        # 한글 여부 check 후 분리
         if re.match("[ㄱ-ㅎㅏ-ㅣ가-힣]", keyword):
             char_code = ord(keyword) - BASE_CODE
             char1 = int(char_code / CHOSUNG)
@@ -97,7 +96,8 @@ def convert(test_keyword):
             char2 = int((char_code - (CHOSUNG * char1)) / JUNGSUNG)
             result.append(JUNGSUNG_LIST[char2])
             char3 = int((char_code - (CHOSUNG * char1) - (JUNGSUNG * char2)))
-            result.append(JONGSUNG_LIST[char3])
+            if char3 > 0:
+                result.append(JONGSUNG_LIST[char3])
         else:
             result.append(keyword.lower())
     return "".join(result)
